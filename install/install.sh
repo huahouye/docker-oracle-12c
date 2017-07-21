@@ -5,6 +5,7 @@
 # https://pierreforstmanndotcom.wordpress.com/2013/06/27/how-to-install-oracle-12-1-in-silent-mode/
 # http://dbaora.com/install-oracle-in-silent-mode-11g-release-2-11-2/
 # https://pierreforstmanndotcom.wordpress.com/2017/03/01/oracle-database-12-2-0-1-silent-installation-and-database-creation-on-oracle-linux-7/
+# http://dbaora.com/install-oracle-in-silent-mode-12c-release-2-12-2-on-oel7/
 
 set -x
 
