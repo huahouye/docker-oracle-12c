@@ -219,8 +219,13 @@ su - oracle -c "dbca -silent -createDatabase -responseFile /tmp/database/respons
 
 ## vi /etc/oratab
 ### ORA12C:/ora01/app/oracle/product/12..0/db_1:Y
+echo "ORA12C:$ORACLE_HOME:Y" > /etc/oratab
 
+## vi $ORACLE_HOME/network/admin/sqlnet.ora append a new option
+SQLNET.ALLOWED_LOGON_VERSION=8
 
-
+## change system password
+### sqlplus /nolog
+### password system
 
 
