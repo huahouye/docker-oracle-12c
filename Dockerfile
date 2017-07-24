@@ -1,8 +1,24 @@
 FROM centos:centos7
+
 MAINTAINER huahouye <huahouye@gmail.com>
-ADD tmp/database /tmp/
+
+ENV ORACLE_HOME /ora01/app/oracle/product/12.2.0/db_1
+ENV ORACLE_SID  ORA12C
+
+ADD tmp/database /tmp/database
 ADD config /config/
-RUN chmod +x /config/*.sh && chmod 755 /config/*.sh && /bin/sh -c /config/install-oracle.sh
-CMD ["/bin/sh", "-c", "/config/start.sh"] 
+
+RUN whoami && chmod +x /config/*.sh && ls -l /config/ && sh /config/install-part1.sh
+
+USER oracle
+RUN whoami && sh /config/install-part2.sh
+
+USER root
+RUN whoami && sh /config/install-part3.sh
+
+USER oracle
+RUN whoami && sh /config/install-part4.sh
+
+CMD ["/config/start.sh"] 
 
 EXPOSE 1521 5500 8080

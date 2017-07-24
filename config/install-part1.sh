@@ -1,8 +1,6 @@
 #!/bin/sh
 
-# install oracle 12c release 2
-
-# http://dbaora.com/install-oracle-in-silent-mode-12c-release-2-12-2-on-oel7/
+# install oracle 12c release 2 part 1, logon as root
 
 set -x
 
@@ -56,8 +54,8 @@ oracle   soft   memlock  3145728
 oracle   hard   memlock  3145728
 EOF
 
-systemctl stop firewalld
-systemctl disable firewalld
+# systemctl stop firewalld
+# systemctl disable firewalld
 
 cat << \EOF >> /home/oracle/.bash_profile
 export TMP=/tmp
@@ -181,51 +179,4 @@ databaseType=OLTP
 automaticMemoryManagement=TRUE
 totalMemory=450
 EOF
-
-## Start binaries installation (run as oracle)
-### wait for several minutes
-su - oracle -c "cd /tmp/database; ./runInstaller -silent -responseFile /tmp/database/response/db_install.rsp"
-### sqlplus / as sysdba
-
-/ora01/app/oraInventory/orainstRoot.sh
-/ora01/app/oracle/product/12.2.0/db_1/root.sh
-
-## Configure Oracle Net
-### 端口 1521 被占用，实际没有 http://blog.csdn.net/xiangsir/article/details/8632048
-### less /ora01/app/oracle/cfgtoollogs/netca/trace_OraDB12Home1-1707215PM0219.log
-su - oracle -c "netca -silent -responseFile /tmp/database/response/netca.rsp"
-
-## run database installation (run as oracle)
-su - oracle -c "lsnrctl start && lsnrctl status && mkdir /ora01/app/oracle/oradata && mkdir /ora01/app/oracle/flash_recovery_area"
-### less /ora01/app/oracle/cfgtoollogs/dbca/ORA12C/ORA12C0.log
-su - oracle -c "dbca -silent -createDatabase -responseFile /tmp/database/response/dbca.rsp"
-### sqlplus / as sysdba
-### SQL> startup
-### SQL> show parameter db_name
-### NAME               TYPE     VALUE
-### ----------- ----------- -------------
-### db_name          string     ORA12C
-### SQL> alter session set container=PORA12C1;
-### Session altered.
-### SQL> show con_id
-### CON_ID
-### ------------------------------
-### 3
-### SQL> show con_name
-### CON_NAME
-### ------------------------------
-### PORA12C1
-### SQL>
-
-## vi /etc/oratab
-### ORA12C:/ora01/app/oracle/product/12..0/db_1:Y
-echo "ORA12C:$ORACLE_HOME:Y" > /etc/oratab
-
-## vi $ORACLE_HOME/network/admin/sqlnet.ora append a new option
-SQLNET.ALLOWED_LOGON_VERSION=8
-
-## change system password
-### sqlplus /nolog
-### password system
-
 
